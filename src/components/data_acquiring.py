@@ -47,7 +47,7 @@ class Data_Ingestion:
         except Exception as e:
             raise CustomException(e, sys)
         
-    def train_test_split(self):
+    def train_test_split(self,split=0.8):
         try:
             if os.path.exists(self.create_dirs.artifacts_path) and  os.path.exists(self.create_dirs.train_data_path) and os.path.exists(self.create_dirs.test_data_path):
                 logging.info('Train and test directories already exist.')
@@ -68,23 +68,27 @@ class Data_Ingestion:
 
                 classes=(os.listdir(self.create_dirs.train_data_path))
                 class_paths=[os.path.join(self.create_dirs.train_data_path,cls) for cls in classes]
-                split=0.8
+
                 os.mkdir(self.create_dirs.test_data_path)
                 logging.info('Successfully created test directory.')
                 for cls,class_path in zip(classes,class_paths):
                     files=os.listdir(class_path)
                     num_of_files=len(files)
-                
-                    for i in range(0,num_of_files,2):  #for loop for flipping alternate images. Used cv,could also use PIL.
-                        cur_file_path=os.path.join(class_path,files[i])
-                        image=Image.open(cur_file_path)
-                        image= image.transpose(Image.FLIP_LEFT_RIGHT)
-                        image.save(cur_file_path)
+                    num_of_files_in_train=num_of_files*split
                     random.shuffle(files)
                     os.mkdir(os.path.join(self.create_dirs.test_data_path,cls))
 
-                    for file in files[int(num_of_files*split):]:
+
+                    for file in files[int(num_of_files_in_train):]:
                         shutil.move(os.path.join(class_path,file),os.path.join(self.create_dirs.test_data_path,cls,file))
+                    
+                    files=os.listdir(class_path)
+                    for i in range(0,num_of_files,2):  #for loop for flipping alternate images. Used cv,could also use PIL.
+                            cur_file_path=os.path.join(class_path,files[i])
+                            image=Image.open(cur_file_path)
+                            image= image.transpose(Image.FLIP_LEFT_RIGHT)
+                            image.save(cur_file_path)
+                    
                 end_time=timer()
                 time_taken=end_time-start_time
                 logging.info(f'Successfully created train and test folders. Time taken: {time_taken:.2f} seconds')
