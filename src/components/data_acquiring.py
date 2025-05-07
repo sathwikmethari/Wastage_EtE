@@ -23,11 +23,11 @@ class Data_Ingestion:
         self.url=url
     def download_zip_file(self):
         try:
-            if os.path.exists(self.create_dirs.artifacts_path) and os.path.exists(self.create_dirs.zip_path):
+            if os.path.exists(self.create_dirs.artifacts_path) and os.path.exists(self.create_dirs.zip_path) and os.listdir(self.create_dirs.zip_path):
                 logging.info("You may have already downloaded the zip file!")
             else:
-                os.mkdir(self.create_dirs.artifacts_path)
-                os.mkdir(self.create_dirs.zip_path)
+                os.makedirs(self.create_dirs.artifacts_path,exist_ok=True)
+                os.makedirs(self.create_dirs.zip_path,exist_ok=True)
                 logging.info('Created artifacts and zip directories.')
                 start_time = timer()
                 logging.info('Downloading the file...')
@@ -83,7 +83,7 @@ class Data_Ingestion:
                         shutil.move(os.path.join(class_path,file),os.path.join(self.create_dirs.test_data_path,cls,file))
                     
                     files=os.listdir(class_path)
-                    for i in range(0,num_of_files,2):  #for loop for flipping alternate images. Used cv,could also use PIL.
+                    for i in range(0,int(num_of_files_in_train),2):  #for loop for flipping alternate images. Used cv,could also use PIL.
                             cur_file_path=os.path.join(class_path,files[i])
                             image=Image.open(cur_file_path)
                             image= image.transpose(Image.FLIP_LEFT_RIGHT)
@@ -92,9 +92,14 @@ class Data_Ingestion:
                 end_time=timer()
                 time_taken=end_time-start_time
                 logging.info(f'Successfully created train and test folders. Time taken: {time_taken:.2f} seconds')
+                return classes
         except Exception as e:
+            logging.error(CustomException(e,sys))
             raise CustomException(e, sys)
         
 if __name__=='__main__':
     data_acquisition=Data_Ingestion()
     data_acquisition.download_zip_file()
+    classes=data_acquisition.train_test_split()
+    
+    
