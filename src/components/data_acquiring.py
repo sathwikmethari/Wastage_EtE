@@ -1,13 +1,13 @@
-import os, sys, zipfile, requests, shutil, random,tqdm
+import os, sys, zipfile, requests, shutil, random
 from PIL import Image
 from dataclasses import dataclass
 
 from io import BytesIO
 from timeit import default_timer as timer
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))) Uncomment while running this file.
+
 from src.exceptions import CustomException
 from src.logger import logging
-#from src.utils import sampler_utils
 
 @dataclass
 class DataAcquisition:
@@ -45,12 +45,14 @@ class Data_Ingestion:
                 zip_file.close()
                 logging.info('File downloaded and extracted successfully.')
         except Exception as e:
+            logging.error(CustomException(e,sys))
             raise CustomException(e, sys)
         
     def train_test_split(self,split=0.8):
         try:
             if os.path.exists(self.create_dirs.artifacts_path) and  os.path.exists(self.create_dirs.train_data_path) and os.path.exists(self.create_dirs.test_data_path):
                 logging.info('Train and test directories already exist.')
+                classes=(os.listdir(self.create_dirs.train_data_path))
             else:
                 start_time=timer()
                 path=self.create_dirs.zip_path
@@ -92,7 +94,7 @@ class Data_Ingestion:
                 end_time=timer()
                 time_taken=end_time-start_time
                 logging.info(f'Successfully created train and test folders. Time taken: {time_taken:.2f} seconds')
-                return classes
+            return classes
         except Exception as e:
             logging.error(CustomException(e,sys))
             raise CustomException(e, sys)

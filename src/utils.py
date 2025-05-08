@@ -1,9 +1,7 @@
 import os
 import torch
-import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import DataLoader, Dataset
-from torch.utils.data import Dataset, DataLoader
+import torchvision as tv
+from torch.utils.data import Dataset
 from PIL import Image
 from tqdm.auto import tqdm
 from typing import List, Dict, Tuple
@@ -222,3 +220,28 @@ def train(model: torch.nn.Module,
     # Return the filled results at the end of the epochs
     return  results
 
+def model_loader(classes,device):
+
+    weights = tv.models.ResNet50_Weights.DEFAULT # .DEFAULT = best available weights
+
+    model = tv.models.resnet50(weights=weights).to(device)
+
+    for param in model.parameters():
+        param.requires_grad = True
+# Get the length of class_names (one output unit for each class)
+    output_shape = len(classes)
+    inputs=model.fc.in_features
+    # Recreate the classifier layer and seed it to the target device
+    model.classifier = torch.nn.Sequential(
+    torch.nn.Dropout(p=0.5, inplace=True), 
+    torch.nn.Linear(in_features=inputs, 
+                    out_features=output_shape, # same number of output units as our number of classes
+                    bias=True)).to(device)
+
+    return model
+
+def preprocessing_for_loaders():
+    weights = tv.models.ResNet50_Weights.DEFAULT # .DEFAULT = best available weights
+    preprocessing = weights.transforms()
+    return preprocessing
+        
