@@ -6,10 +6,11 @@ from pipeline.predict_pipeline import Prediction
 
 
 app=Flask(__name__)
-@app.route('/',methods=['GET','POST'])
+@app.route('/upload',methods=['GET','POST'])
 def predict_final():
-    image = request.files.get('image')
-    if image:
+    output=''
+    if request.method=='POST':
+        image = request.files.get('image')
         predictor=Prediction()
         img = Image.open(image.stream).convert('RGB')
         output=predictor.predict(img)

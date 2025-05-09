@@ -232,11 +232,7 @@ def model_loader(classes,device):
     output_shape = len(classes)
     inputs=model.fc.in_features
     # Recreate the classifier layer and seed it to the target device
-    model.classifier = torch.nn.Sequential(
-    torch.nn.Dropout(p=0.5, inplace=True), 
-    torch.nn.Linear(in_features=inputs, 
-                    out_features=output_shape, # same number of output units as our number of classes
-                    bias=True)).to(device)
+    model.fc = torch.nn.Linear(inputs, output_shape).to(device)
 
     return model
 

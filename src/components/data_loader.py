@@ -10,22 +10,21 @@ from src.exceptions import CustomException
 
 from src.components.data_acquiring import DataAcquisition, Data_Ingestion
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-logging.info(f"Using device: {device}")
-
 
 class Model_and_Data_loader:
     def __init__(self):
         self.dirs_path=DataAcquisition()
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        logging.info(f"Using device: {self.device}")
+        self.preprocessing=preprocessing_for_loaders()
         
     def load_data(self, classes, batch_size=32):
-        try:
-            preprocessing=preprocessing_for_loaders()
+        try:            
             logging.info('Loading data...')
-            train_dataset = ImageDataset(self.dirs_path.train_data_path,classes,preprocessing)
-            test_dataset = ImageDataset(self.dirs_path.test_data_path, classes,preprocessing)
-            train_dataloader = DataLoader(train_dataset,batch_size=batch_size,shuffle=True,pin_memory=True,num_workers=3)
-            test_dataloader = DataLoader(test_dataset,batch_size=batch_size,shuffle=True,pin_memory=True,num_workers=3)
+            train_dataset = ImageDataset(self.dirs_path.train_data_path,classes,self.preprocessing)
+            test_dataset = ImageDataset(self.dirs_path.test_data_path, classes,self.preprocessing)
+            train_dataloader = DataLoader(train_dataset,batch_size=batch_size,shuffle=True,pin_memory=True,num_workers=4)
+            test_dataloader = DataLoader(test_dataset,batch_size=batch_size,shuffle=True,pin_memory=True,num_workers=4)
             logging.info('Train, Test dataloaders loaded.')
             return train_dataloader, test_dataloader
         except Exception as e:

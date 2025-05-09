@@ -17,26 +17,22 @@
       flex-direction: column;
     }
     .header {
-      font-family: 'Roboto', sans-serif;
-      font-size: 2.5rem;
-      color: #2c3e50;
+      font-family: 'Verdana', sans-serif;
+      font-size: 55px;
+      color: #5c083b;
       margin-bottom: 2rem;
-      font-weight: 500;
+      font-weight: 1000;
     }
-    form.upload-form {
+    .box {
       background: #ffffff;
       padding: 2rem;
       border-radius: 1rem;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
       text-align: center;
       width: 320px;
+      margin-bottom: 1.5rem;
     }
-    form.upload-form h1 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-      color: #2c3e50;
-    }
-    form.upload-form input[type="file"] {
+    .box input[type="file"] {
       display: none;
     }
     .custom-file-upload {
@@ -55,7 +51,7 @@
       background: #3498db;
       color: white;
     }
-    .upload-form button {
+    .box button {
       padding: 0.6rem 1.5rem;
       font-size: 1rem;
       background-color: #2ecc71;
@@ -66,28 +62,23 @@
       transition: background 0.3s;
       margin-top: 0.5rem;
     }
-    .upload-form button:hover {
+    .box button:hover {
       background-color: #27ae60;
     }
-    .preview-box {
-      display: none;
-      margin-top: 2rem;
-      width: 50vw;
+    .info-box {
       background: #ffffff;
-      border-radius: 0.8rem;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
       padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
       text-align: center;
-      font-size: 1.5rem;
-      font-weight: 500;
+      font-size: 1.3rem;
+      font-weight: 1000;
       color: #2c3e50;
-    }
-    .preview-box.show {
-      display: block;
+      width: 50vw;
+      margin-bottom: 1.5rem;
     }
     .refresh-btn {
-      margin-top: 1rem;
-      padding: 0.5rem 1.2rem;
+      padding: 0.6rem 1.2rem;
       font-size: 1rem;
       background-color: #e74c3c;
       color: white;
@@ -102,9 +93,9 @@
   </style>
 </head>
 <body>
-  <div class="header">Image Classifier</div>
-  <form class="upload-form" id="imageForm" method="POST" action="/" enctype="multipart/form-data">
-    <h1>Upload an Image</h1>
+  <div class="header">--Image Classifier--</div>
+
+  <form class="box" action="/upload" method="post" enctype="multipart/form-data">
     <label for="imageUpload" class="custom-file-upload">
       Choose Image
     </label>
@@ -113,28 +104,12 @@
     <button type="submit">Submit</button>
   </form>
 
-  <div class="preview-box" id="previewBox">
-    CLASS:"{{output}}"
+  <div class="info-box">
+    CLASS -- >  "{{output if output}}"
   </div>
 
-  <button class="refresh-btn" onclick="window.location.reload();">Refresh</button>
-
-  <script>
-    const imageForm = document.getElementById('imageForm');
-    const previewBox = document.getElementById('previewBox');
-
-    imageForm.addEventListener('submit', function(event) {
-      const imageInput = document.getElementById('imageUpload');
-      const file = imageInput.files[0];
-      if (!file || !file.type.startsWith('image/')) {
-        alert('Please select a valid image file.');
-        event.preventDefault();
-        return;
-      }
-      // Show the preview box and keep it displayed
-      previewBox.classList.add('show');
-      // Do not hide it again (previous version used setTimeout or similar)
-    });
-  </script>
+  <form method="get" action="/upload">
+    <button class="refresh-btn" type="submit">Refresh</button>
+  </form>
 </body>
 </html>
